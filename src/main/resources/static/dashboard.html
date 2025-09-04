@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Animated Dashboard with Profile Upload</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: #f0f4f7;
+          margin: 0;
+          padding-top: 56px; /* For fixed navbar */
+        }
+
+        /* Navbar */
+        .navbar-custom {
+          background-color: #2b8a3e;
+        }
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link {
+          color: #fff;
+        }
+        .navbar-custom .nav-link:hover {
+          color: #b3d89c;
+        }
+
+        /* Profile circle container */
+        .profile-container {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          overflow: hidden;
+          cursor: pointer;
+          border: 2px solid #b3d89c;
+          transition: box-shadow 0.3s ease;
+        }
+        .profile-container:hover {
+          box-shadow: 0 0 8px 2px #89c35c;
+        }
+        .profile-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: transform 0.3s ease;
+        }
+        .profile-container:hover .profile-image {
+          transform: scale(1.1);
+        }
+
+        /* Banner section */
+        .banner {
+          width: 100%;
+          height: 320px;
+          background-image: url('https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1500&q=80');
+          background-repeat: no-repeat;
+          background-position: center center;
+          background-size: cover;
+          position: relative;
+          margin-bottom: 30px;
+          box-shadow: inset 0 0 0 1000px rgba(43, 138, 62, 0.25);
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .banner-text {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          color: white;
+          font-size: 2.2rem;
+          font-weight: 700;
+          text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+        }
+
+        /* Box model + cards & animations */
+        .card {
+          border-radius: 15px;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
+        }
+        .card:hover {
+          transform: translateY(-8px) scale(1.05);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+        .card-img-top {
+          border-top-left-radius: 15px;
+          border-top-right-radius: 15px;
+          height: 160px;
+          object-fit: cover;
+          transition: transform 0.4s ease;
+        }
+        .card:hover .card-img-top {
+          transform: scale(1.1);
+        }
+        .card-body {
+          text-align: center;
+        }
+        .card-title {
+          font-weight: 700;
+          color: #2b8a3e;
+          margin-bottom: 10px;
+        }
+        .card-text {
+          color: #555;
+          font-size: 0.95rem;
+          margin-bottom: 20px;
+        }
+        .btn-custom {
+          background-color: #2b8a3e;
+          color: white;
+          border-radius: 25px;
+          padding: 8px 22px;
+          font-weight: 600;
+          box-shadow: 0 6px 10px rgba(43, 138, 62, 0.4);
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+          border: none;
+        }
+        .btn-custom:hover {
+          background-color: #3cb251;
+          box-shadow: 0 10px 20px rgba(60, 178, 81, 0.6);
+          transform: translateY(-3px);
+        }
+        h2.section-heading {
+          font-weight: 800;
+          color: #2b8a3e;
+          margin-bottom: 30px;
+          text-align: center;
+          letter-spacing: 0.05em;
+        }
+        .dashboard-grid {
+          opacity: 0;
+          animation: fadeInUp 0.8s forwards;
+          animation-delay: 0.2s;
+        }
+        @keyframes fadeInUp {
+          0% {
+            opacity: 0;
+            transform: translateY(25px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Hide file input */
+        #profileImageInput {
+          display: none;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top shadow">
+    <div class="container">
+        <a class="navbar-brand" href="#">MyDashboard</a>
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon" style="filter: invert(1)"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end align-items-center" id="navbarNav">
+            <ul class="navbar-nav gap-3 me-3">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Events</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Pets</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Bookings</a></li>
+            </ul>
+            <!-- Profile Picture Circle -->
+            <div class="profile-container" title="Click to change profile image" tabindex="0" role="button" aria-label="Change profile image" onclick="triggerImageUpload()" onkeypress="if(event.key==='Enter'){triggerImageUpload()}">
+                <img src="https://randomuser.me/api/portraits/lego/1.jpg" alt="Profile" id="profileImage" class="profile-image" />
+            </div>
+            <input type="file" id="profileImageInput" accept="image/*" onchange="previewProfileImage(event)" />
+        </div>
+    </div>
+</nav>
+
+<!-- Banner Section -->
+<div class="banner">
+    <div class="banner-text">Dogs & Cats Enjoying the Great Outdoors</div>
+</div>
+
+<!-- Page container -->
+<div class="container py-3">
+    <h2 class="section-heading">Dashboard Overview</h2>
+    <div class="row g-4 dashboard-grid">
+        <!-- Events Card -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card" tabindex="0" role="button" aria-label="Events Card">
+                <img
+                        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
+                        class="card-img-top"
+                        alt="Events"
+                />
+                <div class="card-body">
+                    <h5 class="card-title">Events</h5>
+                    <p class="card-text">Track upcoming events and manage schedules.</p>
+                    <button class="btn btn-custom">View Events</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Card -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card" tabindex="0" role="button" aria-label="Products Card">
+                <img
+                        src="https://images.unsplash.com/photo-1542838687-6d609c2eb615?auto=format&fit=crop&w=600&q=80"
+                        class="card-img-top"
+                        alt="Products"
+                />
+                <div class="card-body">
+                    <h5 class="card-title">Products</h5>
+                    <p class="card-text">Manage your inventory and product listings.</p>
+                    <button class="btn btn-custom">View Products</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pets Card -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card" tabindex="0" role="button" aria-label="Pets Card">
+                <img
+                        src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=600&q=80"
+                        class="card-img-top"
+                        alt="Pets"
+                />
+                <div class="card-body">
+                    <h5 class="card-title">Pets</h5>
+                    <p class="card-text">View and update your pets' profiles and health data.</p>
+                    <button class="btn btn-custom">View Pets</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Card -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card" tabindex="0" role="button" aria-label="Bookings Card">
+                <img
+                        src="https://images.unsplash.com/photo-1512034400317-4aa38d7d5c56?auto=format&fit=crop&w=600&q=80"
+                        class="card-img-top"
+                        alt="Bookings"
+                />
+                <div class="card-body">
+                    <h5 class="card-title">Bookings</h5>
+                    <p class="card-text">See your upcoming and past booking appointments.</p>
+                    <button class="btn btn-custom">View Bookings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Trigger hidden file input click
+    function triggerImageUpload() {
+      document.getElementById('profileImageInput').click();
+    }
+
+    // Preview selected image and update profile circle
+    function previewProfileImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('profileImage').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+</script>
+</body>
+</html>

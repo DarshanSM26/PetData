@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - VetPawtner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<h2>Login</h2>
+<form id="loginForm" class="mb-3">
+    <div class="mb-2">
+        <label>Email</label>
+        <input type="email" id="loginEmail" class="form-control" required>
+    </div>
+    <div class="mb-2">
+        <label>Password</label>
+        <input type="password" id="loginPassword" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+<div id="loginMessage" class="mb-3 text-danger"></div>
+
+<script>
+    const USER_URL = "http://localhost:8080/api/user/all";
+
+    document.getElementById("loginForm").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      try {
+        const res = await fetch(USER_URL);
+        const users = await res.json();
+        const user = users.find(u => u.email === email && u.password === password);
+
+        if(!user){
+          document.getElementById("loginMessage").textContent = "❌ Invalid email or password";
+          return;
+        }
+
+        // Store user info in sessionStorage
+        sessionStorage.setItem("loggedInUserId", user.id);
+        sessionStorage.setItem("loggedInUsername", user.username);
+
+        // Redirect to Pet Page
+        window.location.href = "petpage.html";
+      } catch(err){
+        console.error(err);
+        document.getElementById("loginMessage").textContent = "⚠️ Login failed. Check console";
+      }
+    });
+</script>
+</body>
+</html>

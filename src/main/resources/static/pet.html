@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VetPawtner - Login & Pets</title>
+</head>
+<body>
+
+<h2>Login</h2>
+<form id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required><br>
+    <input type="password" id="loginPassword" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+</form>
+<div id="loginMessage" style="font-weight:bold;margin-top:10px;"></div>
+
+<hr>
+
+<h2>Pet List</h2>
+<div id="petsSection">Please login to see pets.</div>
+
+<h2>Sell Your Pet</h2>
+<form id="addPetForm" style="display:none;">
+    <input type="text" id="name" placeholder="Pet Name" required><br>
+    <input type="text" id="breed" placeholder="Breed" required><br>
+    <select id="gender" required>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+    </select><br>
+    <input type="date" id="dob" required><br>
+    <input type="text" id="vaccinationDetails" placeholder="Vaccination Details"><br>
+    <button type="submit">Add Pet</button>
+</form>
+
+<div id="message" style="margin-top:10px;font-weight:bold;"></div>
+
+<script>
+    const BASE_URL = "/demo/pet"; // Spring Boot pet API
+    const USER_URL = "/demo/user/all"; // Example user API for login
+
+    // Check if user is already logged in
+    let loggedInUserId = localStorage.getItem("userid");
+    if (loggedInUserId) {
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("addPetForm").style.display = "block";
+      loadPets();
+    }
+
+    // LOGIN
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      try {
+        const res = await fetch(USER_URL);
+        if (!res.ok) throw new Error("Failed to fetch users");
+        const users = await res.json();
+        const user = users.find(u => u.email === email && u.password === password);
+        if (!user) {
+          document.getElementById("loginMessage").textContent = "❌ Invalid email or password.";
+          return;
+        }
+        loggedInUserId = user.id;
+        localStorage.setItem("userid", loggedInUserId);
+        document.getElementById("loginMessage").textContent = `✅ Logged in as ${user.username}`;
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("addPetForm").style.display = "block";
+        loadPets();
+      } catch (err) {
+        document.getElementById("loginMessage").textContent = "⚠️ Login failed. Check console.";
+        console.error(err);
+      }
+    });
+
+    // LOAD PETS
+    async function loadPets() {
+      try {
+        const res = await fetch(BASE_URL + "/fetching");
+        if (!res.ok) throw new Error("Failed to fetch pets");
+        const pets = await res.json();
+        const container = document.getElementById("petsSection");
+        container.innerHTML = "";
+        if (pets.length === 0) {
+          container.textContent = "No pets found.";
+        } else {
+          pets.forEach(p => {
+            const div = document.createElement("div");
+            div.textContent = `ID: ${p.petId}, Name: ${p.name}, Breed: ${p.breed}, Gender: ${p.gender}`;
+            container.appendChild(div);
+          });
+        }
+      } catch (err) {
+        document.getElementById("petsSection").textContent = "⚠️ Failed to load pets. Check console.";
+        console.error(err);
+      }
+    }
+
+    // ADD PET
+    document.getElementById("addPetForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const petData = {
+        name: document.getElementById("name").value,
+        breed: document.getElementById("breed").value,
+        gender: document.getElementById("gender").value,
+        dob: document.getElementById("dob").value,
+        vaccinationDetails: document.getElementById("vaccinationDetails").value,
+        user: { id: parseInt(loggedInUserId) }
+      };
+
+      try {
+        const res = await fetch(BASE_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(petData)
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error("Failed to add pet: " + text);
+        }
+
+        const newPet = await res.json();
+        document.getElementById("message").textContent = `✅ Pet "${newPet.name}" added successfully!`;
+        loadPets(); // Refresh pet list
+        document.getElementById("addPetForm").reset();
+      } catch (err) {
+        document.getElementById("message").textContent = "⚠️ Failed to add pet. Check console.";
+        console.error(err);
+      }
+    });
+</script>
+</body>
+</html>

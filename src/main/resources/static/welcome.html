@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      color: #333;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #ff4b2b;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1 id="welcomeMsg">Welcome!</h1>
+  <p id="userEmail"></p>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user) {
+    document.getElementById("welcomeMsg").innerText = "Welcome, " + user.username + " 🎉";
+    document.getElementById("userEmail").innerText = "Email: " + user.email;
+  } else {
+    window.location.href = "index.html";
+  }
+
+  function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+  }
+</script>
+</body>
+</html>

@@ -33,7 +33,7 @@ public class User {
     private Role role = Role.user;
 
     public enum Role {
-        user, admin
+        user, admin, vet
     }
 
 

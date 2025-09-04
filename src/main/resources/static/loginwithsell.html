@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VetPawtner</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+<h2>Login</h2>
+<div id="loginSection">
+  <form id="loginForm" class="mb-3">
+    <div class="mb-2">
+      <label>Email</label>
+      <input type="email" id="loginEmail" class="form-control" required>
+    </div>
+    <div class="mb-2">
+      <label>Password</label>
+      <input type="password" id="loginPassword" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+  </form>
+  <div id="loginMessage" class="mb-3"></div>
+</div>
+
+<hr>
+
+<div id="addPetSection" style="display:none;">
+  <h2>Add Pet</h2>
+  <form id="addPetForm" class="mb-3">
+    <div class="mb-2">
+      <label>Pet Name</label>
+      <input type="text" id="petName" class="form-control" required>
+    </div>
+    <div class="mb-2">
+      <label>Breed</label>
+      <input type="text" id="petBreed" class="form-control" required>
+    </div>
+    <div class="mb-2">
+      <label>Gender</label>
+      <select id="petGender" class="form-select" required>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="mb-2">
+      <label>DOB</label>
+      <input type="date" id="petDob" class="form-control" required>
+    </div>
+    <div class="mb-2">
+      <label>Vaccination Details</label>
+      <input type="text" id="petVaccination" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-success">Add Pet</button>
+  </form>
+  <div id="addPetMessage" class="mb-3"></div>
+</div>
+
+<hr>
+
+<h2>All Pets</h2>
+<div id="petsList" class="row"></div>
+
+<script>
+  let loggedInUserId = null;
+
+  // URLs
+  const USER_URL = "http://localhost:8080/api/user/all";
+  const PET_URL = "http://localhost:8080/demo/pet/fetching"; // lowercase /fetching
+
+  // -------- LOGIN ----------
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    try {
+      const res = await fetch(USER_URL);
+      const users = await res.json();
+
+      const user = users.find(u => u.email === email && u.password === password);
+      if(!user){
+        document.getElementById("loginMessage").textContent = "❌ Invalid email or password.";
+        return;
+      }
+
+      loggedInUserId = user.id;
+      localStorage.setItem("userid", loggedInUserId);
+      document.getElementById("loginMessage").textContent = `✅ Logged in as ${user.username}`;
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("addPetSection").style.display = "block";
+
+      loadPets();
+    } catch (err) {
+      console.error(err);
+      document.getElementById("loginMessage").textContent = "⚠️ Login failed. Check console.";
+    }
+  });
+
+  // -------- FETCH PETS ----------
+  async function loadPets(){
+    try {
+      const res = await fetch(PET_URL);
+      const pets = await res.json();
+
+      const container = document.getElementById("petsList");
+      container.innerHTML = "";
+      pets.forEach(pet => {
+        const div = document.createElement("div");
+        div.className = "col-md-4 mb-3";
+        div.innerHTML = `
+          <div class="card p-2">
+            <h5>${pet.name}</h5>
+            <p><strong>Breed:</strong> ${pet.breed}</p>
+            <p><strong>Gender:</strong> ${pet.gender}</p>
+            <p><strong>DOB:</strong> ${pet.dob}</p>
+            <p><strong>Vaccination:</strong> ${pet.vaccinationDetails}</p>
+            <p><strong>Owner ID:</strong> ${pet.user?.id || "N/A"}</p>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    } catch (err) {
+      console.error(err);
+      document.getElementById("petsList").textContent = "⚠️ Failed to load pets.";
+    }
+  }
+
+  // -------- ADD PET ----------
+  document.getElementById("addPetForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if(!loggedInUserId) {
+      document.getElementById("addPetMessage").textContent = "⚠️ Please login first.";
+      return;
+    }
+
+    const petData = {
+      name: document.getElementById("petName").value,
+      breed: document.getElementById("petBreed").value,
+      gender: document.getElementById("petGender").value,
+      dob: document.getElementById("petDob").value,
+      vaccinationDetails: document.getElementById("petVaccination").value,
+      user: { id: loggedInUserId }
+    };
+
+    try {
+      const res = await fetch("http://localhost:8080/demo/pet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(petData)
+      });
+
+      if(!res.ok) throw new Error("Failed to add pet");
+
+      document.getElementById("addPetMessage").textContent = "✅ Pet added successfully!";
+      document.getElementById("addPetForm").reset();
+      loadPets();
+    } catch (err) {
+      console.error(err);
+      document.getElementById("addPetMessage").textContent = "⚠️ Failed to add pet. Check console.";
+    }
+  });
+</script>
+
+</body>
+</html>

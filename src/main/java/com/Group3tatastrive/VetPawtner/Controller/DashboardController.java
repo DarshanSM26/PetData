@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/demo/dashboard")
+@CrossOrigin(origins = "http://localhost:5500")
 public class DashboardController {
 
     @Autowired

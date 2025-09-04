@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
@@ -29,20 +30,23 @@ public class VetPawtnerApplication implements CommandLineRunner {
 	@Autowired
 	ProductRepository productRepository;
 
+	@Autowired
+	PetHealthRepository petHealthRepository;
+
 
 	@Override
 	public void run(String... args) throws Exception {
-		String email = "darshi@example.com";
+		/*String email = "darshi@example.com";
 		User user; // declare before if
 		if (!userRepository.existsByEmail(email)) {
 			user = new User();
 			user.setRole(User.Role.user);
 			userRepository.save(user);
 		} else {
-			user = userRepository.findByEmail(email).orElseThrow(null);
+			user = (User) userRepository.findByEmail(email).orElseThrow(null);
 		}
 
-		Order order  = new Order();
+	Order order  = new Order();
 		order.setOrderId(order.getOrderId());
 		order.setUser(order.getUser());
 		order.setProduct(order.getProduct());
@@ -70,14 +74,23 @@ public class VetPawtnerApplication implements CommandLineRunner {
 		petRepository.save(pet);
 
 		Product product = new Product();
-		/*product.setName("Darshan");
+		product.setName("Darshan");
 		product.setDescription("Toy bone item");
 		product.setPrice(200);
 		product.setStock(2);
 		product.setCategory("Toy");
 		product.setImage_url("https:localhost:8080");
-		productRepository.save(product);*/
+		productRepository.save(product);
 
+		PetHealth petHealth = new PetHealth();
+		petHealth.setPet(pet);
+		petHealth.setCheckup_date(LocalDate.now());
+		petHealth.setWeight(new BigDecimal("12.50"));
+		petHealth.setTemperature(new BigDecimal("38.5"));
+		petHealth.setNotes("Routine check-up, healthy.");
+		petHealth.setVet_name("Dr. smith");
+		petHealthRepository.save(petHealth);
+	}*/
 	}
 
 }

@@ -12,10 +12,10 @@ import java.util.List;
 @RequestMapping("/demo/pet")
 public class PetController {
 
-    @Autowired
+    /*@Autowired
     private PetService petService;
 
-    @GetMapping("Feteching")
+    @GetMapping("/fetching")
     public ResponseEntity<List<Pet>> getalldetailsofPets(){
         return ResponseEntity.ok(petService.getAllPets());
     }
@@ -32,6 +32,35 @@ public class PetController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Pet> deletealldetails(@PathVariable Integer id){
+        return ResponseEntity.ok(petService.deletePet(id));
+    }*/
+
+
+
+    @Autowired
+    private PetService petService;
+
+    // -------- Get all Pets --------
+    @GetMapping("/fetching")
+    public ResponseEntity<List<Pet>> getAllPets() {
+        return ResponseEntity.ok(petService.getAllPets());
+    }
+
+    // -------- Add Pet --------
+    @PostMapping
+    public ResponseEntity<Pet> addPet(@RequestBody Pet pet) {
+        return ResponseEntity.ok(petService.savePet(pet));
+    }
+
+    // -------- Update Pet --------
+    @PutMapping("/{id}")
+    public ResponseEntity<Pet> updatePet(@PathVariable Integer id, @RequestBody Pet pet) {
+        return ResponseEntity.ok(petService.updatePet(id, pet));
+    }
+
+    // -------- Delete Pet --------
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Pet> deletePet(@PathVariable Integer id) {
         return ResponseEntity.ok(petService.deletePet(id));
     }
 }

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - VetPawtner</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div class="sidebar-logo">VetPawtner Admin</div>
+    <nav>
+      <ul>
+        <li><a href="#" class="active">Dashboard</a></li>
+        <li><a href="#">Users</a></li>
+        <li><a href="#">Pets</a></li>
+        <li><a href="#">Appointments</a></li>
+        <li><a href="#">Reports</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="main-content">
+    <header class="header">
+      <input type="search" placeholder="Search..." class="search-input">
+      <div class="admin-profile">Admin <span class="profile-circle"></span></div>
+    </header>
+    <section class="overview-cards">
+      <div class="card">Total Users<br><span id="userCount">127</span></div>
+      <div class="card">Pets<br><span id="petCount">52</span></div>
+      <div class="card">Appointments<br><span id="apptCount">15</span></div>
+      <div class="card">Reports<br><span id="reportCount">4</span></div>
+    </section>
+    <section class="main-table">
+      <h3>Recent Users</h3>
+      <table>
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+        </tr>
+        </thead>
+        <tbody id="userTableBody">
+        <!-- JS renders user rows here -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>
