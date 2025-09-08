@@ -11,6 +11,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("demo/product")
+// Spring Boot example
+@CrossOrigin(origins = "http://127.0.0.1:5500")
+
 public class ProductController {
    /* @Autowired
     ProductRepository productRepository;

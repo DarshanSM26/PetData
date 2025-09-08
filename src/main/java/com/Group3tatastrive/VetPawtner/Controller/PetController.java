@@ -10,6 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/demo/pet")
+// Spring Boot example
+@CrossOrigin(origins = "http://127.0.0.1:5500")
+
 public class PetController {
 
     /*@Autowired

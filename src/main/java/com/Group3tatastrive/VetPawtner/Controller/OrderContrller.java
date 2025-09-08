@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RestController
 @RequestMapping("demo/orders")
+// Spring Boot example
+@CrossOrigin(origins = "http://127.0.0.1:5500")
+
 public class OrderContrller {
     @Autowired
     private OrderService orderService;
