@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body { background:#f8f8f8; font-family:'Segoe UI', sans-serif; }
+        .card { margin-top:50px; border-radius:15px; box-shadow:0 6px 18px rgba(0,0,0,0.12);}
+        h3 { color:#ff6b35; font-weight:700; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h3 class="mb-4">Your Order</h3>
+                <p><strong>Product:</strong> <span id="orderProductName"></span></p>
+                <p><strong>Price:</strong> ₹<span id="orderProductPrice"></span></p>
+                <div class="mb-3">
+                    <label for="orderQty" class="form-label">Quantity</label>
+                    <input type="number" id="orderQty" class="form-control" value="1" min="1">
+                </div>
+                <p><strong>Total:</strong> ₹<span id="orderTotal"></span></p>
+                <button id="payBtn" class="btn btn-success w-100">Continue to Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const products = [
+      { product_id: 1, product_name: "Ainsworth Pet Nutrition", price: 30.50 },
+      { product_id: 2, product_name: "Dog Chow For Pets", price: 28.00 },
+      { product_id: 3, product_name: "Hill's Pet Nutrition", price: 50.20 },
+      { product_id: 4, product_name: "Mars PathCare Toys", price: 79.28 },
+      { product_id: 5, product_name: "Prolife Pet Foods", price: 50.20 },
+      { product_id: 6, product_name: "Nutram Petcare Kit", price: 100.28 },
+      { product_id: 7, product_name: "Diamond Pet Foods - Grooming", price: 30.50 },
+      { product_id: 8, product_name: "J M Smucker Biscuits", price: 28.00 },
+      { product_id: 9, product_name: "Natural Balance Pet Foods (Poster)", price: 50.20 },
+      { product_id: 10, product_name: "Gaines-Burgers", price: 25.28 },
+      { product_id: 11, product_name: "Natural Balance Pet Foods - Bag", price: 50.20 },
+      { product_id: 12, product_name: "Carriers", price: 25.28 }
+    ];
+
+    // Get product ID from URL
+    const params = new URLSearchParams(window.location.search);
+    const productId = parseInt(params.get('productId'));
+    const product = products.find(p => p.product_id === productId);
+
+    // Populate page
+    document.getElementById('orderProductName').textContent = product.product_name;
+    document.getElementById('orderProductPrice').textContent = product.price.toFixed(2);
+    const qtyInput = document.getElementById('orderQty');
+    const totalSpan = document.getElementById('orderTotal');
+    function updateTotal() {
+      const qty = parseInt(qtyInput.value);
+      totalSpan.textContent = (product.price * qty).toFixed(2);
+    }
+    qtyInput.addEventListener('input', updateTotal);
+    updateTotal();
+
+    // Razorpay payment
+    document.getElementById('payBtn').onclick = function() {
+      const qty = parseInt(qtyInput.value);
+      const totalAmount = product.price * qty * 100; // in paise
+
+      var options = {
+        "key": "rzp_test_YourKeyHere", // Replace with your Razorpay test key
+        "amount": totalAmount,
+        "currency": "INR",
+        "name": "VetPawtner",
+        "description": product.product_name,
+        "handler": function (response){
+            alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+            window.location.href = "product.html"; // back to product page
+        },
+        "prefill": {
+            "name": "Customer Name",
+            "email": "customer@example.com",
+            "contact": "9999999999"
+        },
+        "theme": {
+            "color": "#ff6b35"
+        }
+      };
+      var rzp1 = new Razorpay(options);
+      rzp1.open();
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

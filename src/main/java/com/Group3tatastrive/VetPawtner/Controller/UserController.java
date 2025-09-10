@@ -12,8 +12,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/user")
 // Spring Boot example
-@CrossOrigin(origins = "http://127.0.0.1:5500")
-
+@CrossOrigin(origins = {"http://127.0.0.1:5500","http://127.0.0.1:5501"})
 public class UserController {
     @Autowired
    private  UserService userService;
